@@ -323,7 +323,7 @@ static inline unsigned int im_nphys_cyls(struct image *im)
 }
 static inline bool_t in_da_mode(struct image *im, unsigned int cyl)
 {
-#if TARGET == TARGET_shugart
+#if TARGET == TARGET_shugart && !defined(FF_R8)
     return cyl >= max_t(unsigned int, DA_FIRST_CYL, im_nphys_cyls(im));
 #else
     return FALSE;

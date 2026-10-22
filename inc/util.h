@@ -129,12 +129,22 @@ void speaker_notify_insert(unsigned int slotnr);
 void speaker_notify_eject(void);
 
 /* Display: 3-digit 7-segment display */
+#ifdef FF_R8
+/* 64kB build: LCD/OLED only, 7-segment driver stubbed out. */
+static inline void led_7seg_init(void) {}
+static inline void led_7seg_write_raw(const uint8_t *d) {}
+static inline void led_7seg_write_string(const char *p) {}
+static inline void led_7seg_write_decimal(unsigned int val) {}
+static inline void led_7seg_display_setting(bool_t enable) {}
+static inline int led_7seg_nr_digits(void) { return 0; }
+#else
 void led_7seg_init(void);
 void led_7seg_write_raw(const uint8_t *d);
 void led_7seg_write_string(const char *p);
 void led_7seg_write_decimal(unsigned int val);
 void led_7seg_display_setting(bool_t enable);
 int led_7seg_nr_digits(void);
+#endif
 
 /* Display: I2C 16x2 LCD */
 bool_t lcd_init(void);

@@ -554,6 +554,7 @@ const struct image_handler *img_open(struct image *im)
         return &raw_image_handler;
 
     switch (ff_cfg.host) {
+#ifndef FF_R8
     case HOST_akai:
     case HOST_gem:
         type = akai_type;
@@ -585,14 +586,17 @@ const struct image_handler *img_open(struct image *im)
     case HOST_pc98:
         type = pc98_type;
         break;
+#endif
     case HOST_pc_dos:
         if (pc_dos_open(im))
             return &raw_image_handler;
         goto fallback;
+#ifndef FF_R8
     case HOST_ti99:
         return ti99_open(im);
     case HOST_uknc:
         return uknc_open(im);
+#endif
     default:
         type = img_type;
         break;

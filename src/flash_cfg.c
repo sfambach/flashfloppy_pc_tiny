@@ -29,7 +29,9 @@ union cfg_slot {
     uint16_t words[SLOTW_NR];
 };
 
-#if MCU == MCU_stm32f105
+#if MCU == MCU_stm32f105 && defined(FF_R8)
+#define SLOT_BASE (union cfg_slot *)(0x8010000 - FLASH_PAGE_SIZE)
+#elif MCU == MCU_stm32f105
 #define SLOT_BASE (union cfg_slot *)(0x8020000 - FLASH_PAGE_SIZE)
 #elif MCU == MCU_at32f435
 #define SLOT_BASE (union cfg_slot *)(0x8040000 - FLASH_PAGE_SIZE)

@@ -1,0 +1,42 @@
+name: Upstream check
+on:
+  schedule:
+  - cron: '0 6 1 * *'   # monthly
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Compare with keirf/flashfloppy
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        git remote add upstream https://github.com/keirf/flashfloppy
+        git fetch --tags upstream master
+        n=$(git rev-list --count HEAD..upstream/master)
+        echo "New upstream commits: $n"
+        [ "$n" -eq 0 ] && exit 0
+        title="Upstream FlashFloppy has new commits"
+        open=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq length)
+        if [ "$open" -ne 0 ]; then
+          echo "Issue already open"
+          exit 0
+        fi
+        {
+          echo "keirf/flashfloppy master has $n commit(s) not merged here."
+          echo "Latest upstream tag: $(git describe --tags --abbrev=0 upstream/master)"
+          echo
+          echo '```'
+          git log --oneline HEAD..upstream/master | head -50
+          echo '```'
+          echo
+          echo 'Merge with `git merge upstream/master`, then check `make pc-tiny` still fits (see README.pc-tiny.md).'
+        } > body.md
+        gh issue create --title "$title" --body-file body.md

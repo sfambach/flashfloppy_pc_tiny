@@ -44,6 +44,7 @@ class Target:
         return self._flash_size - self._bootloader_size - self._page_size
 
 targets = { 'stm32f105': Target(kb(32), kb(128), kb(2)),
+            'stm32f105r8': Target(0, kb(64), kb(2)),
             'at32f435': Target(kb(48), kb(256), kb(2)) }
 
 def usage(argv):
@@ -70,7 +71,7 @@ def main(argv):
     ih = IntelHex(h)
     for (s,e) in ih.segments():
         sz = e - s
-        if s == t.bootloader_base():
+        if s == t.bootloader_base() and t.bootloader_size() != 0:
             if sz > t.bootloader_size():
                 fatal('%s: Bootloader overflows by %d bytes'
                       % (prefix, sz - t.bootloader_size()))

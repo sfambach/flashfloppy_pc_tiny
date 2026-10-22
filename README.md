@@ -1,3 +1,5 @@
+> **Fork:** PC-only build for the STM32F105R8 (64 kB), see [README.pc-tiny.md](README.pc-tiny.md).
+
 # FlashFloppy
 
 *The #1 floppy emulator.*

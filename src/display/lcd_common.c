@@ -57,7 +57,12 @@ static uint8_t _bl;
 static uint8_t i2c_addr;
 static uint8_t i2c_dead;
 static uint8_t i2c_row;
+#ifdef FF_R8
+/* 64kB build: OLED only. HD44780 LCD and FF OSD code folds away. */
+#define is_oled_display TRUE
+#else
 static bool_t is_oled_display;
+#endif
 static uint8_t oled_height;
 /* The font that lcd_columns is sized for. FF.CFG may change
  * ff_cfg.oled_font before it resets the system. */

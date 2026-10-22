@@ -218,7 +218,11 @@
 
 /* FLASHFLOPPY: Allow GPT partitions to be found. Does not require LBA64,
  * nor exFAT. This option alone does not support GPT in f_mkfs. */
+#ifdef FF_R8
+#define FF_GPT			0
+#else
 #define FF_GPT			1
+#endif
 
 
 #define FF_LBA64		0

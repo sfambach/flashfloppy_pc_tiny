@@ -1,7 +1,9 @@
 OBJS += display.o
 OBJS += lcd_$(mcu).o
 OBJS += oled_font_6x13.o
+ifneq ($(r8),y)
 OBJS += led_7seg.o
+endif
 
 ifneq ($(target),bootloader)
 lcd_$(mcu).o: CFLAGS += -Dfont_extra=1
@@ -9,7 +11,7 @@ lcd_$(mcu).o: CFLAGS += -Dfont_extra=1
 # STM32F105/AT32F415 (the most flash-hungry build types), we don't hardcode the
 # 8x16 font in favor of building its glyphs at runtime as a bold (shifted-by-1)
 # version of 6x13.
-oled_font_8x16_synth ?= $(debug)$(logfile)
+oled_font_8x16_synth ?= $(debug)$(logfile)$(r8)
 ifeq ($(mcu)$(oled_font_8x16_synth),stm32f105y)
 lcd_$(mcu).o: CFLAGS += -DOLED_FONT_8x16_SYNTH=1
 else
