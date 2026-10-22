@@ -2573,11 +2573,7 @@ static int construct_eject_menu(uint8_t *menu)
             continue;
         if ((i >= EJM_copy) && (i <= EJM_delete) && cfg.hxc_mode)
             continue;
-#ifdef FF_R8
-        /* 64kB build: no image copy/paste/delete. */
-        if ((i >= EJM_copy) && (i <= EJM_delete))
-            continue;
-#endif
+
         menu[j++] = i;
     }
     return j-1;
@@ -2686,7 +2682,6 @@ static uint8_t noinline eject_menu(uint8_t b)
                     cfg.slot.attributes |= AM_RDO;
                 }
                 break;
-#ifndef FF_R8
             case EJM_copy:
                 image_copy();
                 sel_max = construct_eject_menu(menu);
@@ -2699,7 +2694,6 @@ static uint8_t noinline eject_menu(uint8_t b)
                     break;
                 b = 0xff; /* selector */
                 goto out;
-#endif
             case EJM_exit_to_selector:
                 display_write_slot(TRUE);
                 b = 0xff; /* selector */
@@ -2721,9 +2715,6 @@ out:
 
 static void folder_menu(void)
 {
-#ifdef FF_R8
-    return; /* 64kB build: no paste into folder. */
-#endif
     if (display_type != DT_LCD_OLED)
         return;
 

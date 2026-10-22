@@ -10,8 +10,8 @@ OBJS-$(apple2) += apple2.o
 ifneq ($(r8),y)
 OBJS-$(shugart) += adf.o
 OBJS-$(shugart) += dsk.o
-endif
 OBJS-$(shugart) += hfe.o
+endif
 OBJS-$(shugart) += img.o
 ifneq ($(r8),y)
 OBJS-$(shugart) += da.o

@@ -120,7 +120,12 @@ void display_init(void);
 extern uint8_t display_type;
 #define DT_NONE     0
 #define DT_LCD_OLED 1
+#ifdef FF_R8
+/* Out of range for uint8_t: every 7-segment branch folds away. */
+#define DT_LED_7SEG 0x100
+#else
 #define DT_LED_7SEG 2
+#endif
 
 /* Speaker. */
 void speaker_init(void);

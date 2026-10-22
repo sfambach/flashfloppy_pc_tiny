@@ -12,18 +12,26 @@ Target: PC hosts with an SSD1306/SH1106 OLED and three buttons, e.g. the
 | Removed | Why |
 |---|---|
 | Bootloader / update from USB stick | 32 kB. Flash with ST-Link or serial instead. |
-| Image formats other than IMG/IMA/DSK (raw) and HFE | PC only. ADF, EDSK, D81, ST, TRD, XDF, ... are gone. |
+| Image formats other than IMG/IMA/DSK (raw) | PC only. HFE, ADF, EDSK, D81, ST, TRD, XDF, ... are gone. |
 | Host-specific raw geometries (Akai, Ensoniq, MSX, TI-99, ...) | `host = pc-dos` and the default IMG list remain. |
 | HxC compatibility and indexed navigation | Native (folder) navigation only. |
 | Direct-access mode (host-side selector tools) | |
 | HD44780 LCD, 7-segment LED, FF OSD | OLED only. |
 | Rotary encoder | Buttons only. |
 | SD card | USB stick only. |
-| Copy / Paste / Delete in the eject menu | |
 | GPT partitions on the USB stick | MBR / superfloppy only. |
 
 `IMG.CFG` and `FF.CFG` still work; options for removed features are ignored.
 The main menu entry *Update Firmware* only restarts the unit (no bootloader).
+
+## New blank image
+
+Put an empty template on the stick, e.g. a 1.44 MB image of zeros
+(`dd if=/dev/zero of=BLANK144.IMG bs=1024 count=1440`). On the device:
+select it, open the eject menu, choose *Copy*, then *Paste*. FlashFloppy
+writes a numbered copy (`BLANK144_000.IMG`, ...) next to it, which the PC
+then formats. Selecting a folder and pressing *Paste* there puts the copy
+into that folder.
 
 ## Build
 
@@ -61,7 +69,7 @@ make pc-tiny
 ```
 
 If the merged firmware no longer fits, the build stops with
-`Firmware overflows by N bytes`. Headroom at the time of writing: 76 bytes.
+`Firmware overflows by N bytes`. Headroom at the time of writing: 1140 bytes.
 
 A monthly workflow (`.github/workflows/upstream-check.yml`) opens an issue
 when upstream has new commits.

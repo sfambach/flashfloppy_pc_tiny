@@ -42,7 +42,6 @@ extern const struct image_handler dummy_image_handler;
 /* 64kB build: PC formats only. */
 const struct image_type image_type[] = {
     { "dsk", img_open },
-    { "hfe", hfe_open },
     { "img", img_open },
     { "ima", img_open },
     { "out", img_open },
@@ -215,8 +214,8 @@ void image_open(struct image *im, struct slot *slot, DWORD *cltbl)
         /* Only put formats here that have a strong identifying header. */
 #ifndef FF_R8
         dsk_open,
-#endif
         hfe_open
+#endif
     };
 
     char ext[sizeof(slot->type)+1];

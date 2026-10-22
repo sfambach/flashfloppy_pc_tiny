@@ -44,7 +44,7 @@ endif
 ifeq ($(r8),y)
 FLAGS += -DFF_R8=1
 # Code disabled for R8 is left in place and dropped by --gc-sections.
-FLAGS += -Wno-unused-function -Wno-unused-variable
+FLAGS += -Wno-unused-function -Wno-unused-variable -Wno-switch-outside-range
 # Link-time optimisation. Partial links (build.o) carry the LTO IR through.
 FLAGS += -flto
 LD = $(CC) -nostdlib $(filter -mcpu=% -mthumb -mfloat-abi=% -O%,$(FLAGS)) -flto
