@@ -29,6 +29,7 @@ void display_init(void)
             break; /* positive identification */
         }
 
+#ifndef FF_R8
         if ((ff_cfg.display_type & 3) == DISPLAY_auto) {
             led_7seg_init();
             display_type = DT_LED_7SEG;
@@ -37,6 +38,7 @@ void display_init(void)
             if (led_7seg_nr_digits() == 3)
                 break; /* positive identification */
         }
+#endif
 
         if (probe_ms <= 0)
             break; /* probe timeout */

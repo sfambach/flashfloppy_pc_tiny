@@ -53,6 +53,17 @@ apple2-bootloader-%: FORCE
 
 all-%: FORCE prod-% debug-% logfile-% ;
 
+# PC-only build for STM32F105R8 (64kB Flash), no bootloader.
+# See README.pc-tiny.md. Built out-of-tree so objects never mix with the
+# standard build.
+pc-tiny: FORCE
+	$(MAKE) target mcu=stm32f105 target=shugart level=prod r8=y \
+	    O=$(abspath $(O))/out/pc-tiny
+	cp $(OUT)/pc-tiny/out/stm32f105/prod/shugart/target.hex \
+	    $(OUT)/flashfloppy-pc-tiny-r8-$(VER).hex
+	cp $(OUT)/pc-tiny/out/stm32f105/prod/shugart/target.bin \
+	    $(OUT)/flashfloppy-pc-tiny-r8-$(VER).bin
+
 ffemu-%: FORCE
 	$(MAKE) -C $(ROOT)/ffemu O=$(O) TARGET=$*
 

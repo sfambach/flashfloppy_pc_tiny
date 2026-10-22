@@ -40,6 +40,16 @@ else ifeq ($(mcu),at32f435)
 FLAGS += -mcpu=cortex-m4
 endif
 
+# STM32F105R8 (64kB Flash): no bootloader, reduced feature set.
+ifeq ($(r8),y)
+FLAGS += -DFF_R8=1
+# Code disabled for R8 is left in place and dropped by --gc-sections.
+FLAGS += -Wno-unused-function -Wno-unused-variable
+# Link-time optimisation. Partial links (build.o) carry the LTO IR through.
+FLAGS += -flto
+LD = $(CC) -nostdlib $(filter -mcpu=% -mthumb -mfloat-abi=% -O%,$(FLAGS)) -flto
+endif
+
 MCU_FLAG := -DMCU=MCU_$(mcu)
 $(mcu) := y
 
@@ -97,8 +107,13 @@ build.o: $(OBJS)
 	@echo OBJCOPY $@
 	$(OBJCOPY) -O ihex $< $@
 	chmod a-x $@
+ifeq ($(r8),y)
+	$(PYTHON) $(ROOT)/scripts/check_hex.py $@ $(mcu)r8
+else
 	$(PYTHON) $(ROOT)/scripts/check_hex.py $@ $(mcu)
-ifneq ($(target),bootloader)
+endif
+ifeq ($(target)$(r8),bootloader)
+else ifneq ($(r8),y)
 	srec_cat ../bootloader/target.hex -Intel $@ -Intel -o $@ -Intel
 endif
 

@@ -38,6 +38,17 @@ image_open_fn dummy_open;
 extern const struct image_handler da_image_handler;
 extern const struct image_handler dummy_image_handler;
 
+#ifdef FF_R8
+/* 64kB build: PC formats only. */
+const struct image_type image_type[] = {
+    { "dsk", img_open },
+    { "hfe", hfe_open },
+    { "img", img_open },
+    { "ima", img_open },
+    { "out", img_open },
+    { "", NULL }
+};
+#else
 const struct image_type image_type[] = {
     { "adf", adf_open },
     { "atr", atr_open },
@@ -69,6 +80,7 @@ const struct image_type image_type[] = {
     { "xdf", xdf_open },
     { "", NULL }
 };
+#endif
 
 #elif TARGET == TARGET_apple2
 
@@ -201,7 +213,9 @@ void image_open(struct image *im, struct slot *slot, DWORD *cltbl)
         /* Special handler for dummy slots (empty HxC slot 0). */
         dummy_open,
         /* Only put formats here that have a strong identifying header. */
+#ifndef FF_R8
         dsk_open,
+#endif
         hfe_open
     };
 
@@ -220,6 +234,7 @@ void image_open(struct image *im, struct slot *slot, DWORD *cltbl)
             break;
     hint = type->open;
 
+#ifndef FF_R8
     /* Apply host-specific overrides to the hint. */
     switch (ff_cfg.host) {
     case HOST_acorn:
@@ -231,15 +246,19 @@ void image_open(struct image *im, struct slot *slot, DWORD *cltbl)
             hint = jvc_open;
         break;
     }
+#endif
 
     while (hint != NULL) {
         if (try_handler(im, slot, cltbl, hint))
             return;
         /* Hint failed. Try a secondary hint. */
+#ifndef FF_R8
         if (hint == img_open) {
             /* IMG,IMA,DSK,OUT -> XDF */
             hint = xdf_open;
-        } else if (!strcmp(ext, "dsk")) {
+        } else
+#endif
+        if (!strcmp(ext, "dsk")) {
             /* DSK -> IMG */
             hint = img_open;
             ext[0] = '\0';
@@ -341,7 +360,10 @@ bool_t image_setup_track(
 {
     const struct image_handler *h = im->track_handler;
 
-#if TARGET == TARGET_shugart
+#if TARGET == TARGET_shugart && defined(FF_R8)
+    h = ((track>>1) >= im_nphys_cyls(im)) ? &dummy_image_handler
+         : im->disk_handler;
+#elif TARGET == TARGET_shugart
     if (!in_da_mode(im, track>>1)) {
         /* If we are exiting D-A mode then need to re-read the config file. */
         if (h == &da_image_handler)

@@ -45,6 +45,7 @@ DSTATUS disk_initialize(BYTE pdrv)
     if (!(usb_ops.initialize(pdrv) & STA_NOINIT))
         goto out;
 
+#ifndef FF_R8
     /* Try SD if the build and the board support it, and no USB drive is 
      * inserted. */
     if ((board_id == BRDREV_Gotek_sd_card)
@@ -52,6 +53,7 @@ DSTATUS disk_initialize(BYTE pdrv)
         && !(sd_ops.initialize(pdrv) & STA_NOINIT)) {
         vol_ops = &sd_ops;
     }
+#endif
 
 out:
     return disk_status(pdrv);
@@ -106,9 +108,11 @@ DRESULT disk_ioctl(BYTE pdrv, BYTE ctrl, void *buff)
 
 bool_t volume_connected(void)
 {
+#ifndef FF_R8
     /* Force switch to USB drive if inserted. */
     if ((vol_ops == &sd_ops) && usbh_msc_inserted())
         return FALSE;
+#endif
     return vol_ops->connected();
 }
 

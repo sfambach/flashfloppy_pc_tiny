@@ -7,7 +7,13 @@ OBJS += flash_cfg.o
 OBJS += vectors.o
 OBJS += fpec_$(mcu).o
 OBJS += fs.o
+ifneq ($(r8),y)
 OBJS += sd_spi.o
+else
+# The SELA ISR veneer in floppy.c is top-level asm referencing a static
+# function, which LTO does not see.
+floppy.o: CFLAGS += -fno-lto
+endif
 OBJS += spi.o
 OBJS += string.o
 OBJS += cortex.o mcu_$(mcu).o

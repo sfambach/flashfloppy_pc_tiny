@@ -2,6 +2,9 @@
 #if TARGET == TARGET_bootloader
 #define FLASH_BASE 0x08000000
 
+#elif MCU == MCU_stm32f105 && defined(FF_R8)
+#define FLASH_BASE 0x08000000
+
 #elif MCU == MCU_stm32f105
 #define FLASH_BASE 0x08008000
 

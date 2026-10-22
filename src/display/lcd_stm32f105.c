@@ -479,9 +479,14 @@ bool_t lcd_init(void)
             printk("I2C: FF OSD found (ver %x)\n", osd_ver);
         }
 
+#ifdef FF_R8
+        if ((a&~1) != OLED_ADDR)
+            goto fail;
+#else
         is_oled_display = (ff_cfg.display_type & DISPLAY_oled) ? TRUE
             : (ff_cfg.display_type & DISPLAY_lcd) ? FALSE
             : ((a&~1) == OLED_ADDR);
+#endif
 
         if (is_oled_display) {
             oled_height = (ff_cfg.display_type & DISPLAY_oled_64) ? 64 : 32;
@@ -500,7 +505,9 @@ bool_t lcd_init(void)
                    is_oled_display ? "OLED" : "LCD", a);
             i2c_addr = a;
         } else {
+#ifndef FF_R8
             is_oled_display = FALSE;
+#endif
             lcd_columns = ff_cfg.osd_columns;
         }
 

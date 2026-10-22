@@ -497,18 +497,22 @@ static uint8_t rotary, rb;
 
 void IRQ_rotary(void)
 {
+#ifndef FF_R8
     if ((ff_cfg.rotary & ROT_typemask) != ROT_full)
         return;
     rotary = ((rotary << 2) | board_get_rotary()) & 15;
     rb = read_rotary(rotary) ?: rb;
+#endif
 }
 
 static void set_rotary_exti(void)
 {
     exti->imr &= ~board_rotary_exti_mask;
     board_rotary_exti_mask = 0;
+#ifndef FF_R8
     if ((ff_cfg.rotary & ROT_typemask) == ROT_full)
         board_setup_rotary_exti();
+#endif
 }
 
 static void button_timer_fn(void *unused)
@@ -554,6 +558,7 @@ static void button_timer_fn(void *unused)
     if (_b[2] == 0)
         b |= B_SELECT;
 
+#ifndef FF_R8 /* 64kB build: no rotary encoder */
     rotary = ((rotary << 2) | board_get_rotary()) & 15;
     switch (ff_cfg.rotary & ROT_typemask) {
 
@@ -608,6 +613,7 @@ static void button_timer_fn(void *unused)
         rb = rotary_reverse[rb];
     b |= rb;
     rb = 0;
+#endif
 
     switch (display_type) {
     case DT_LCD_OLED:
@@ -1452,6 +1458,10 @@ static void cfg_init(void)
     read_ff_cfg();
     process_ff_cfg_opts(&old_ff_cfg);
 
+#ifdef FF_R8
+    /* 64kB build: native navigation only (no HxC or indexed mode). */
+    goto native_mode;
+#endif
     switch (ff_cfg.nav_mode) {
     case NAVMODE_native:
         goto native_mode;
@@ -2563,6 +2573,11 @@ static int construct_eject_menu(uint8_t *menu)
             continue;
         if ((i >= EJM_copy) && (i <= EJM_delete) && cfg.hxc_mode)
             continue;
+#ifdef FF_R8
+        /* 64kB build: no image copy/paste/delete. */
+        if ((i >= EJM_copy) && (i <= EJM_delete))
+            continue;
+#endif
         menu[j++] = i;
     }
     return j-1;
@@ -2671,6 +2686,7 @@ static uint8_t noinline eject_menu(uint8_t b)
                     cfg.slot.attributes |= AM_RDO;
                 }
                 break;
+#ifndef FF_R8
             case EJM_copy:
                 image_copy();
                 sel_max = construct_eject_menu(menu);
@@ -2683,6 +2699,7 @@ static uint8_t noinline eject_menu(uint8_t b)
                     break;
                 b = 0xff; /* selector */
                 goto out;
+#endif
             case EJM_exit_to_selector:
                 display_write_slot(TRUE);
                 b = 0xff; /* selector */
@@ -2704,6 +2721,9 @@ out:
 
 static void folder_menu(void)
 {
+#ifdef FF_R8
+    return; /* 64kB build: no paste into folder. */
+#endif
     if (display_type != DT_LCD_OLED)
         return;
 

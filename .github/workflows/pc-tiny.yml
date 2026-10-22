@@ -1,0 +1,22 @@
+name: PC tiny (STM32F105R8)
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Dependencies
+      run: |
+        sudo apt update
+        sudo apt -y install gcc-arm-none-eabi python3-pip
+        python3 -m pip install --user crcmod intelhex
+
+    - name: Build
+      run: make pc-tiny VER=$(git rev-parse --short HEAD)
+
+    - name: Upload firmware
+      uses: actions/upload-artifact@v4
+      with:
+        name: flashfloppy-pc-tiny-r8
+        path: out/flashfloppy-pc-tiny-r8-*

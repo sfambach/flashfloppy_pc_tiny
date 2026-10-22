@@ -1,0 +1,71 @@
+# FlashFloppy PC tiny (STM32F105R8)
+
+A reduced build of [FlashFloppy](https://github.com/keirf/flashfloppy) that
+fits the **STM32F105R8T6 (64 kB Flash)**. The stock firmware needs 128 kB
+(32 kB bootloader + ~84 kB firmware + 2 kB config) and does not start on the R8.
+
+Target: PC hosts with an SSD1306/SH1106 OLED and three buttons, e.g. the
+[Mini Floppy Emulator](https://github.com/konkotgit/Mini-Floppy-Emulator).
+
+## What is left out
+
+| Removed | Why |
+|---|---|
+| Bootloader / update from USB stick | 32 kB. Flash with ST-Link or serial instead. |
+| Image formats other than IMG/IMA/DSK (raw) and HFE | PC only. ADF, EDSK, D81, ST, TRD, XDF, ... are gone. |
+| Host-specific raw geometries (Akai, Ensoniq, MSX, TI-99, ...) | `host = pc-dos` and the default IMG list remain. |
+| HxC compatibility and indexed navigation | Native (folder) navigation only. |
+| Direct-access mode (host-side selector tools) | |
+| HD44780 LCD, 7-segment LED, FF OSD | OLED only. |
+| Rotary encoder | Buttons only. |
+| SD card | USB stick only. |
+| Copy / Paste / Delete in the eject menu | |
+| GPT partitions on the USB stick | MBR / superfloppy only. |
+
+`IMG.CFG` and `FF.CFG` still work; options for removed features are ignored.
+The main menu entry *Update Firmware* only restarts the unit (no bootloader).
+
+## Build
+
+```
+make pc-tiny
+```
+
+Output: `out/flashfloppy-pc-tiny-r8-<ver>.hex` and `.bin`, linked at
+`0x08000000`. The last 2 kB page (`0x0800F800`) holds the saved config.
+The build fails if the image does not fit. It is built with LTO.
+
+Requirements as for upstream: `gcc-arm-none-eabi`, Python 3 with `intelhex`
+and `crcmod`.
+
+## Flash
+
+Erase the whole chip, then write the `.hex` (or the `.bin` at `0x08000000`):
+
+- ST-Link: `openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program flashfloppy-pc-tiny-r8-<ver>.hex verify reset exit"`
+- Serial (BOOT0 high, USB-TTL on PA9/PA10): `stm32flash -w flashfloppy-pc-tiny-r8-<ver>.hex -v -e 255 /dev/ttyUSB0`
+
+BOOT0 must be pulled low for normal start.
+
+## Keeping up with upstream
+
+All changes sit behind the make switch `r8=y` (C define `FF_R8`). Without it
+the build is byte-identical to upstream, so upstream changes merge with few or
+no conflicts:
+
+```
+git remote add upstream https://github.com/keirf/flashfloppy
+git fetch upstream
+git merge upstream/master
+make pc-tiny
+```
+
+If the merged firmware no longer fits, the build stops with
+`Firmware overflows by N bytes`. Headroom at the time of writing: 76 bytes.
+
+A monthly workflow (`.github/workflows/upstream-check.yml`) opens an issue
+when upstream has new commits.
+
+## License
+
+As upstream: see [COPYING](COPYING).
