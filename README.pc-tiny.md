@@ -30,7 +30,7 @@ Put an empty template on the stick, e.g. a 1.44 MB image of zeros
 (`dd if=/dev/zero of=BLANK144.IMG bs=1024 count=1440`). On the device:
 select it, open the eject menu, choose *Copy*, then *Paste*. FlashFloppy
 writes a numbered copy (`BLANK144_000.IMG`, ...) next to it, which the PC
-then formats. Selecting a folder and pressing *Paste* there puts the copy
+then formats. Holding SELECT for 1.5 s on a folder pastes the copy
 into that folder.
 
 ## Build
