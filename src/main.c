@@ -3072,7 +3072,7 @@ static void main_menu(void)
     };
 
     int sel = 0;
-    uint8_t b;
+    uint8_t b = 0;
 
     /* Not available to 7-segment display. */
     if (display_type != DT_LCD_OLED)
@@ -3086,6 +3086,11 @@ static void main_menu(void)
             sel += ARRAY_SIZE(menu);
         if (sel >= ARRAY_SIZE(menu))
             sel -= ARRAY_SIZE(menu);
+#ifdef FF_R8
+        /* No bootloader and no OSD on R8: skip those entries. */
+        if ((sel == 2) || (sel == 3))
+            sel = (b & B_LEFT) ? 1 : 4;
+#endif
 
         lcd_write(0, 0, -1, "**Main Menu**");
         lcd_write(0, 1, -1, menu[sel]);
@@ -3117,6 +3122,7 @@ static void main_menu(void)
                 if (main_menu_confirm("Reset"))
                     factory_reset();
                 break;
+#ifndef FF_R8
             case 2: /* Update Firmware */
                 if (main_menu_confirm("Update"))
                     update_firmware();
@@ -3124,6 +3130,7 @@ static void main_menu(void)
             case 3: /* Configure FF OSD */
                 ff_osd_configure();
                 break;
+#endif
             case 4: /* Save FLASH.DMP */
                 /* Written once a drive is mounted, which none is now. */
                 is_dump_flash_cfg_needed = TRUE;

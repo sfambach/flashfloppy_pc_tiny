@@ -22,7 +22,7 @@ Target: PC hosts with an SSD1306/SH1106 OLED and three buttons, e.g. the
 | GPT partitions on the USB stick | MBR / superfloppy only. |
 
 `IMG.CFG` and `FF.CFG` still work; options for removed features are ignored.
-The main menu entry *Update Firmware* only restarts the unit (no bootloader).
+The main menu hides *Update Firmware* and *Configure FF OSD* (no bootloader, no OSD).
 
 ## New blank image
 
