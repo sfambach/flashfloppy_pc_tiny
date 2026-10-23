@@ -52,7 +52,7 @@ Erase the whole chip, then write the `.hex` (or the `.bin` at `0x08000000`):
 
 - ST-Link: `openocd -f interface/stlink.cfg -f target/stm32f1x.cfg -c "program flashfloppy-pc-tiny-r8-<ver>.hex verify reset exit"`
 - Serial (BOOT0 high at power-on, 3.3 V USB-TTL on PA9/PA10): `stm32flash -b 9600 -w flashfloppy-pc-tiny-r8-<ver>.hex -v /dev/ttyUSB0`
-  - Verified on an STM32F105R8T6. The bootloader locks to the first baud rate it sees after reset: after a failed attempt, reset (BOOT0 still high) before retrying. 9600 and 19200 worked.
+  - Verified on an STM32F105R8T6. The bootloader locks to the first baud rate it sees after reset: after a failed attempt, reset (BOOT0 still high) before retrying. 9600, 19200 and 38400 worked.
   - "Failed to open port": another program (e.g. the Arduino IDE) holds the port.
   - stm32flash reports "Flash: Up to 256KiB" for the whole F105/F107 family; the R8 still has 64 KB.
 
