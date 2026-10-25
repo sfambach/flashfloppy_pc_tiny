@@ -24,7 +24,6 @@ Target: PC hosts with an SSD1306/SH1106 OLED and three buttons, e.g. the
 `IMG.CFG` and `FF.CFG` still work; options for removed features are ignored.
 The main menu hides *Update Firmware* and *Configure FF OSD* (no bootloader, no OSD).
 
-
 ## Configuration
 
 Copy [examples/pc-tiny/FF.CFG](examples/pc-tiny/FF.CFG) to the root of the USB stick (FAT32) together with the .IMG/.IMA files. Set the drive-select jumper to S1.
@@ -82,6 +81,16 @@ If the merged firmware no longer fits, the build stops with
 
 A monthly workflow (`.github/workflows/upstream-check.yml`) opens an issue
 when upstream has new commits.
+
+## Authors
+
+- **Keir Fraser** and contributors – FlashFloppy (upstream)
+- **Stefan Fambach** (SteFam) – idea and concept of the PC tiny build, review and testing – https://www.fambach.net
+- **Claude** (Anthropic AI) – implementation of the PC tiny build, via Claude Code
+
+## AI disclosure
+
+This fork is built with AI assistance. Stefan Fambach had the idea, wrote the concept and reviews and tests every change; the implementation (build configuration, code changes and documentation of this fork) is written largely by Claude (Anthropic) via Claude Code. FlashFloppy itself is the work of Keir Fraser and contributors.
 
 ## License
 
